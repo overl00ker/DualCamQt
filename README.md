@@ -36,7 +36,7 @@ sudo chmod 700 /run/user/1000
 
 ## 4. Clone project and build
 ```bash
-git clone https://github.com/yourname/DualCamQt.git
+git clone https://github.com/overl00ker/DualCamQt
 cd DualCamQt
 mkdir build && cd build
 cmake ..
