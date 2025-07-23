@@ -13,13 +13,11 @@ struct CaptureParams
     int width{640};
     int height{480};
     int fps{30};
-    bool forceGray{true};      // попытаться выдать GRAY8 из пайплайна
+    bool forceGray{true};      
 };
 
 inline std::string make_libcamera_pipeline(const CaptureParams& p)
 {
-    // libcamerasrc свойства: camera-id=N; можно использовать camera-name=... при необходимости.
-    // Мы просим формат YUV420 от драйвера, затем videoconvert→GRAY8, appsink в OpenCV.
     std::ostringstream ss;
     ss << "libcamerasrc camera-id=" << p.cameraId
        << " ! video/x-raw,format=YUV420,width=" << p.width
@@ -43,7 +41,6 @@ public:
     bool open(const CaptureParams& params)
     {
         params_ = params;
-        // Пытаемся открыть через GStreamer/libcamerasrc
         std::string pipeline = make_libcamera_pipeline(params);
         cap_.open(pipeline, cv::CAP_GSTREAMER);
         if (!cap_.isOpened())
@@ -73,8 +70,6 @@ public:
             cap_.release();
     }
 
-    // Захват одного кадра. Возвращает true при успехе.
-    // Если forceGray==true и pipeline сработал, то кадр уже одноканальный.
     bool read(cv::Mat& out)
     {
         if (!cap_.isOpened())
@@ -82,7 +77,6 @@ public:
         return cap_.read(out);
     }
 
-    // Попытка grab/retrieve для уменьшения задержки; некоторые backend'ы могут игнорировать.
     bool grab() { return cap_.grab(); }
     bool retrieve(cv::Mat& out) { return cap_.retrieve(out); }
 
